@@ -51,7 +51,7 @@ it('Async: different names', async () => {
   expect(await storage.value).toEqual(10);
   expect(await storage2.value).toEqual(20);
 
-  storage.clear();
+  await storage.clear();
 
   expect(await storage.value).toEqual(undefined);
   expect(await storage2.value).toEqual(20);
