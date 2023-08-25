@@ -11,7 +11,7 @@ the actual storage implementation.
 ## Installation
 
 ```sh
-npm install storage-facade storage-facade-map
+npm install storage-facade@1 storage-facade-map
 ```
 
 # Usage
