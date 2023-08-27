@@ -12,6 +12,7 @@ it('Async: read/write', async () => {
   const storage = createStorage({
     use: new MapInterface(),
     name: 'settings',
+    asyncMode: true,
   });
 
   await storage.open();
@@ -28,6 +29,7 @@ it('Async: different names', async () => {
   const storage = createStorage({
     use: new MapInterface(),
     name: 'settings',
+    asyncMode: true,
   });
 
   await storage.open();
@@ -40,6 +42,7 @@ it('Async: different names', async () => {
   const storage2 = createStorage({
     use: new MapInterface(),
     name: 'settings2',
+    asyncMode: true,
   });
 
   expect(await storage.value).toEqual(10);
@@ -60,6 +63,7 @@ it('Async: different names', async () => {
 it(`Async: case-sensitive`, async () => {
   const storage = createStorage({
     use: new MapInterface(),
+    asyncMode: true,
   });
 
   storage.value = 20;
@@ -76,6 +80,7 @@ it(`Async: case-sensitive`, async () => {
 it(`Async: ref problem (need structuredClone)`, async () => {
   const storage = createStorage({
     use: new MapInterface(),
+    asyncMode: true,
   });
 
   // set value
@@ -93,6 +98,7 @@ it(`Async: ref problem (need structuredClone)`, async () => {
   // Test new session
   const newStorage = createStorage({
     use: new MapInterface(),
+    asyncMode: true,
   });
 
   // get value
@@ -106,6 +112,7 @@ it(`Async: ref problem (need structuredClone)`, async () => {
 it('Async: addDefault', async () => {
   const storage = createStorage({
     use: new MapInterface(),
+    asyncMode: true,
   });
 
   await storage.open();
@@ -131,6 +138,7 @@ it('Async: addDefault', async () => {
 it('Async: getDefault', async () => {
   const storage = createStorage({
     use: new MapInterface(),
+    asyncMode: true,
   });
 
   await storage.open();
@@ -143,6 +151,7 @@ it('Async: getDefault', async () => {
 it('Async: setDefault', async () => {
   const storage = createStorage({
     use: new MapInterface(),
+    asyncMode: true,
   });
 
   await storage.open();
@@ -159,6 +168,7 @@ it('Async: setDefault', async () => {
 it('Async: clearDefault', async () => {
   const storage = createStorage({
     use: new MapInterface(),
+    asyncMode: true,
   });
 
   await storage.open();
@@ -174,6 +184,7 @@ it('Async: clearDefault', async () => {
 it('Async: delete key', async () => {
   const storage = createStorage({
     use: new MapInterface(),
+    asyncMode: true,
   });
 
   await storage.open();
@@ -205,6 +216,7 @@ it('Async: delete key', async () => {
 it('Async: clear storage', async () => {
   const storage = createStorage({
     use: new MapInterface(),
+    asyncMode: true,
   });
 
   await storage.open();
@@ -225,6 +237,7 @@ it('Async: clear storage', async () => {
 it('Async: size', async () => {
   const storage = createStorage({
     use: new MapInterface(),
+    asyncMode: true,
   });
 
   await storage.open();
@@ -242,6 +255,7 @@ it('Async: size', async () => {
 it('Async: key', async () => {
   const storage = createStorage({
     use: new MapInterface(),
+    asyncMode: true,
   });
 
   await storage.open();
@@ -257,6 +271,7 @@ it('Async: key', async () => {
 it('Async: iter', async () => {
   const storage = createStorage({
     use: new MapInterface(),
+    asyncMode: true,
   });
 
   await storage.open();

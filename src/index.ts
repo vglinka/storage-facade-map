@@ -16,54 +16,61 @@ import {
   type StorageFacade,
   type Base,
   defaultStorageName,
+  Ok,
 } from 'storage-facade';
+
+export const defaultAsyncMode = false;
 
 export class MapInterface extends StorageInterface {
   interfaceName = 'MapInterface';
 
   storageName = '';
 
+  asyncMode: boolean = defaultAsyncMode;
+
   storage = new Map<string, unknown>();
 
+  defaultAsyncMode(): boolean {
+    return this.asyncMode;
+  }
+
   // Async
-  async initAsync<T extends StorageInterface>(
-    setup: Setup<T>
-  ): Promise<undefined | Error> {
+  async initAsync<T extends StorageInterface>(setup: Setup<T>): Promise<Error | Ok> {
     this.storageName = setup.name ?? defaultStorageName;
-    return Promise.resolve(undefined);
+    return Promise.resolve(new Ok());
   }
 
   async getItemAsync(key: string): Promise<unknown> {
     return Promise.resolve(structuredClone(this.storage.get(key)));
   }
 
-  async setItemAsync(key: string, value: unknown): Promise<undefined> {
+  async setItemAsync(key: string, value: unknown): Promise<Error | Ok> {
     this.storage.set(key, structuredClone(value));
-    return Promise.resolve(undefined);
+    return Promise.resolve(new Ok());
   }
 
-  async removeItemAsync(key: string): Promise<undefined> {
+  async removeItemAsync(key: string): Promise<Error | Ok> {
     this.storage.delete(key);
-    return Promise.resolve(undefined);
+    return Promise.resolve(new Ok());
   }
 
-  async clearAsync(): Promise<undefined> {
+  async clearAsync(): Promise<Error | Ok> {
     this.storage.clear();
-    return Promise.resolve(undefined);
+    return Promise.resolve(new Ok());
   }
 
-  async sizeAsync(): Promise<number> {
+  async sizeAsync(): Promise<Error | number> {
     return Promise.resolve(this.storage.size);
   }
 
-  async keyAsync(index: number): Promise<string> {
+  async keyAsync(index: number): Promise<Error | string> {
     return Promise.resolve(Array.from(this.storage)[index][0]);
   }
 
   // Sync
-  initSync<T extends StorageInterface>(setup: Setup<T>): Error | undefined {
+  initSync<T extends StorageInterface>(setup: Setup<T>): Error | Ok {
     this.storageName = setup.name ?? defaultStorageName;
-    return undefined;
+    return new Ok();
   }
 
   getItemSync(key: string): unknown {

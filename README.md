@@ -11,7 +11,7 @@ the actual storage implementation.
 ## Installation
 
 ```sh
-npm install storage-facade@1 storage-facade-map
+npm install storage-facade@3 storage-facade-map
 ```
 
 # Usage
@@ -33,10 +33,8 @@ The default values are used if the value in the storage is `undefined`.
 Default values are not stored in the storage, but in the instance.
 Therefore, all these methods are synchronous (no need to use the `await` keyword):
 
-- `.addDefault(obj: Record<string, unknown>)` - adds keys and values
-  from the passed object to the list of default values
-- `.setDefault(obj: Record<string, unknown>)` - replaces the list
-  of default values with the given object
+- `.addDefault(obj)` - adds keys and values from the passed object to the list of default values
+- `.setDefault(obj)` - replaces the list of default values with the given object
 - `.getDefault()` - returns an object containing default values
 - `.clearDefault()` - replaces a list of default values with an empty object
 
@@ -51,18 +49,40 @@ import { MapInterface } from 'storage-facade-map';
 (async () => {
   const storage = createStorage({
     use: new MapInterface(),
+    asyncMode: true, // default: false
   });
 
   // Make sure the storage was initialized without error
   await storage.open();
 
-  storage.value = { c: [40, 42] };
+  storage.value = { data: [40, 42] };
   // After the assignment, wait for the write operation to complete
+  await storage.value; // Successfully written
+  
+  // Read value
+  console.log(await storage.value); // { data: [40, 42] }
+  
+  // When writing, accesses to first-level keys are intercepted only,
+  // so if you need to make changes inside the object,
+  // you need to make changes and then assign it to the first level key.
+  // Get object
+  const updatedValue = (await storage.value) as Record<string, unknown>;
+  // Make changes
+  updatedValue.data = [10, 45];
+  // Update storage
+  storage.value = updatedValue;
   await storage.value; // Successfully written
 
   // Read value
-  console.log(await storage.value); // { c: [40, 42] }
+  console.log(
+    ((await storage.value) as Record<string, unknown>).data
+  ); // [10, 45]
   
+  // OR
+  const value = (await storage.value) as Record<string, unknown>;
+  console.log(value.data); // [10, 45]
+  
+  // Delete value
   delete storage.value;
   await storage.value; // Successfully deleted
   
@@ -73,6 +93,7 @@ import { MapInterface } from 'storage-facade-map';
   
   console.log(await storage.value); // 30
   
+  // Clear storage
   await storage.clear();
   console.log(await storage.value); // undefined
 })();
@@ -86,15 +107,24 @@ import { MapInterface } from 'storage-facade-map';
 
 const storage = createStorage({
   use: new MapInterface(),
-  asyncMode: false,
-  //         ^^^^^
 });
 
 // If an initialization error occurs,
 // it will be thrown on the first attempt to read/write
 try {
-  storage.value = { c: [40, 42] };
-  console.log(storage.value); // { c: [40, 42] }
+  storage.value = { data: [40, 42] };
+  console.log(storage.value); // { data: [40, 42] }
+  
+  // When writing, accesses to first-level keys are intercepted only,
+  // so if you need to make changes inside the object,
+  // you need to make changes and then assign it to the first level key.
+  // Get object
+  const updatedValue = storage.value as Record<string, unknown>;
+  // Make changes
+  updatedValue.data = [10, 45];
+  // Update storage
+  storage.value = updatedValue; // Ok
+  console.log((storage.value as Record<string, unknown>).data); // [10, 45]
   
   delete storage.value;
   console.log(storage.value); // undefined
@@ -106,6 +136,8 @@ try {
   console.log(storage.value); // undefined
 } catch (e) {
   console.error((e as Error).message);
+  // If you are not using TypeScript replace this line with
+  // console.error(e.message);
 }
 ```
 
@@ -118,6 +150,7 @@ import { MapInterface } from 'storage-facade-map';
 (async () => {
   const storage = createStorage({
     use: new MapInterface(),
+    asyncMode: true,
   });
 
   await storage.open();
@@ -154,7 +187,6 @@ import { MapInterface } from 'storage-facade-map';
 
 const storage = createStorage({
   use: new MapInterface(),
-  asyncMode: false,
 });
 
 try {
@@ -189,6 +221,7 @@ import { MapInterface } from 'storage-facade-map';
 (async () => {
   const storage = createStorage({
     use: new MapInterface(),
+    asyncMode: true,
   });
 
   await storage.open();
@@ -247,7 +280,6 @@ import { MapInterface } from 'storage-facade-map';
 
 const storage = createStorage({
   use: new MapInterface(),
-  asyncMode: false,
 });
 
 try {
@@ -297,25 +329,37 @@ try {
 
 # Limitations
 
-## Use only first level keys
+## Use only first level keys when writing
 
-Only first-level keys (like `storage.a =`, but not `storage.a[0] =`
-or `storage.a.b =`) are in sync with the storage.
+When writing, accesses to first-level keys (like `storage.a =`,
+but not `storage.a[0] =` or `storage.a.b =`) are intercepted only,
+so if you need to make changes inside the object, you need to make changes
+and then assign it to the first level key.
 
 Assigning keys of the second or more levels will not give any effect.
 
+sync:
+
 ```TypeScript
+  // Read
+  console.log((storage.value as Record<string, unknown>).data); // Ok
+
+  // Write
   // Don't do that
-  storage.value.user.data = 42; // no effect
+  storage.value.data = 42; // no effect
 ```
 
 Instead, use the following approach:
 
 ```TypeScript
+  // Read
+  console.log((storage.value as Record<string, unknown>).data); // Ok
+
+  // Write
   // Get object
-  const updatedValue = storage.value;
-  // Modify the inner content of an object
-  updatedValue.user.data = 42;
+  const updatedValue = storage.value as Record<string, unknown>;
+  // Make changes
+  updatedValue.data = 42;
   // Update storage
   storage.value = updatedValue; // Ок
 ```
@@ -323,15 +367,20 @@ Instead, use the following approach:
 async:
 
 ```TypeScript
+  // Read
+  console.log(
+    ((await storage.value) as Record<string, unknown>).data
+  ); // Ok
+
+  // Write
   // Get object
-  const updatedValue = await storage.value;
-  // Modify the inner content of an object
-  updatedValue.user.data = 42;
+  const updatedValue = (await storage.value) as Record<string, unknown>;
+  // Make changes
+  updatedValue.data = 42;
   // Update storage
   storage.value = updatedValue; 
   await storage.value // Ок
 ```
-
 
 ## Don't use banned key names
 
@@ -347,7 +396,6 @@ import { MapInterface } from 'storage-facade-map';
 
 const storage = createStorage({
   use: new MapInterface(),
-  asyncMode: false,
 });
 
 try {
