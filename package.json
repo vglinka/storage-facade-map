@@ -1,6 +1,6 @@
 {
   "name": "storage-facade-map",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Just a wrapper for Map.",
   "author": "Vadim Glinka <vadgit@yandex.com>",
   "license": "(MIT OR Apache-2.0)",

@@ -22,6 +22,7 @@ npm install storage-facade@3 storage-facade-map
 - `.clear()` - removes all key-value pairs from the storage
 - `.getEntries()` async only, returns an array of promises to iterate
 - `.entries()` sync only, returns an array of key-value pairs
+- `.deleteStorage()` - delete storage
 - `.size()` - returns the number of key-value pairs
 - `.key(index: number)` - returns the name of the key by its index
 
