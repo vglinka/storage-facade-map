@@ -30,8 +30,14 @@ export class MapInterface extends StorageInterface {
 
   storage = new Map<string, unknown>();
 
+  isDeleted = false;
+
   defaultAsyncMode(): boolean {
     return this.asyncMode;
+  }
+
+  checkStorage(): void {
+    if (this.isDeleted) throw Error('This Storage was deleted!');
   }
 
   // Async
@@ -41,30 +47,42 @@ export class MapInterface extends StorageInterface {
   }
 
   async getItemAsync(key: string): Promise<unknown> {
+    this.checkStorage();
     return Promise.resolve(structuredClone(this.storage.get(key)));
   }
 
   async setItemAsync(key: string, value: unknown): Promise<Error | Ok> {
+    this.checkStorage();
     this.storage.set(key, structuredClone(value));
     return Promise.resolve(new Ok());
   }
 
   async removeItemAsync(key: string): Promise<Error | Ok> {
+    this.checkStorage();
     this.storage.delete(key);
     return Promise.resolve(new Ok());
   }
 
   async clearAsync(): Promise<Error | Ok> {
+    this.checkStorage();
     this.storage.clear();
     return Promise.resolve(new Ok());
   }
 
   async sizeAsync(): Promise<Error | number> {
+    this.checkStorage();
     return Promise.resolve(this.storage.size);
   }
 
   async keyAsync(index: number): Promise<Error | string> {
+    this.checkStorage();
     return Promise.resolve(Array.from(this.storage)[index][0]);
+  }
+
+  async deleteStorageAsync(): Promise<Error | Ok> {
+    this.storage.clear();
+    this.isDeleted = true;
+    return new Ok();
   }
 
   // Sync
@@ -74,27 +92,38 @@ export class MapInterface extends StorageInterface {
   }
 
   getItemSync(key: string): unknown {
+    this.checkStorage();
     return structuredClone(this.storage.get(key));
   }
 
   setItemSync(key: string, value: unknown): void {
+    this.checkStorage();
     this.storage.set(key, structuredClone(value));
   }
 
   removeItemSync(key: string): void {
+    this.checkStorage();
     this.storage.delete(key);
   }
 
   clearSync(): void {
+    this.checkStorage();
     this.storage.clear();
   }
 
   sizeSync(): number {
+    this.checkStorage();
     return this.storage.size;
   }
 
   keySync(index: number): string {
+    this.checkStorage();
     return Array.from(this.storage)[index][0];
+  }
+
+  deleteStorageSync(): void {
+    this.storage.clear();
+    this.isDeleted = true;
   }
 }
 

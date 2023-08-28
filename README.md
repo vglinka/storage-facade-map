@@ -96,6 +96,11 @@ import { MapInterface } from 'storage-facade-map';
   // Clear storage
   await storage.clear();
   console.log(await storage.value); // undefined
+  
+  // Delete storage
+  await storage.deleteStorage();
+  // An error will be thrown when trying to access
+  // console.log(await storage.value); // Err: 'This Storage was deleted!'
 })();
 ```
 
@@ -134,6 +139,11 @@ try {
   
   storage.clear();
   console.log(storage.value); // undefined
+  
+  // Delete storage
+  storage.deleteStorage();
+  // An error will be thrown when trying to access
+  // console.log(storage.value); // Error: 'This Storage was deleted!'
 } catch (e) {
   console.error((e as Error).message);
   // If you are not using TypeScript replace this line with
@@ -385,8 +395,8 @@ async:
 ## Don't use banned key names
 
 There is a list of key names that cannot be used because they are the same
-as built-in method names: [`open`, `clear`, `size`, `key`, `getEntries`,
-`entries`, `addDefault`, `setDefault`, `getDefault`, `clearDefault`].
+as built-in method names: [`open`, `clear`, `deleteStorage`, `size`, `key`,
+`getEntries`, `entries`, `addDefault`, `setDefault`, `getDefault`, `clearDefault`].
 
 Use the `keyIsNotBanned` function to check the key if needed.
 

@@ -6,11 +6,11 @@
 // option.
 
 import { createStorage } from 'storage-facade';
-import { MapInterface, getMapStorage } from '../src/index';
+import { MapInterface as TestedInterface, getMapStorage } from '../src/index';
 
 it('Async: read/write', async () => {
   const storage = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
     name: 'settings',
     asyncMode: true,
   });
@@ -27,7 +27,7 @@ it('Async: read/write', async () => {
 
 it('Async: different names', async () => {
   const storage = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
     name: 'settings',
     asyncMode: true,
   });
@@ -40,7 +40,7 @@ it('Async: different names', async () => {
   expect(await storage.value).toEqual(10);
 
   const storage2 = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
     name: 'settings2',
     asyncMode: true,
   });
@@ -62,7 +62,7 @@ it('Async: different names', async () => {
 
 it(`Async: case-sensitive`, async () => {
   const storage = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
     asyncMode: true,
   });
 
@@ -79,7 +79,7 @@ it(`Async: case-sensitive`, async () => {
 
 it(`Async: ref problem (need structuredClone)`, async () => {
   const storage = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
     asyncMode: true,
   });
 
@@ -97,7 +97,7 @@ it(`Async: ref problem (need structuredClone)`, async () => {
 
   // Test new session
   const newStorage = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
     asyncMode: true,
   });
 
@@ -109,9 +109,31 @@ it(`Async: ref problem (need structuredClone)`, async () => {
   }
 });
 
+it('Async: delete storage', async () => {
+  const storage = createStorage({
+    use: new TestedInterface(),
+    asyncMode: true,
+    name: 'settings',
+  });
+
+  await storage.open();
+
+  storage.value = 42;
+  await storage.value;
+
+  await storage.deleteStorage();
+
+  expect.assertions(1);
+  try {
+    await storage.value;
+  } catch (e) {
+    expect((e as Error).message).toMatch('This Storage was deleted!');
+  }
+});
+
 it('Async: addDefault', async () => {
   const storage = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
     asyncMode: true,
   });
 
@@ -137,7 +159,7 @@ it('Async: addDefault', async () => {
 
 it('Async: getDefault', async () => {
   const storage = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
     asyncMode: true,
   });
 
@@ -150,7 +172,7 @@ it('Async: getDefault', async () => {
 
 it('Async: setDefault', async () => {
   const storage = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
     asyncMode: true,
   });
 
@@ -167,7 +189,7 @@ it('Async: setDefault', async () => {
 
 it('Async: clearDefault', async () => {
   const storage = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
     asyncMode: true,
   });
 
@@ -183,7 +205,7 @@ it('Async: clearDefault', async () => {
 
 it('Async: delete key', async () => {
   const storage = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
     asyncMode: true,
   });
 
@@ -215,7 +237,7 @@ it('Async: delete key', async () => {
 
 it('Async: clear storage', async () => {
   const storage = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
     asyncMode: true,
   });
 
@@ -236,7 +258,7 @@ it('Async: clear storage', async () => {
 
 it('Async: size', async () => {
   const storage = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
     asyncMode: true,
   });
 
@@ -254,7 +276,7 @@ it('Async: size', async () => {
 
 it('Async: key', async () => {
   const storage = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
     asyncMode: true,
   });
 
@@ -270,7 +292,7 @@ it('Async: key', async () => {
 
 it('Async: iter', async () => {
   const storage = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
     asyncMode: true,
   });
 

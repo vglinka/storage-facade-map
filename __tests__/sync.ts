@@ -6,11 +6,11 @@
 // option.
 
 import { createStorage } from 'storage-facade';
-import { MapInterface, getMapStorage } from '../src/index';
+import { MapInterface as TestedInterface, getMapStorage } from '../src/index';
 
 it('Sync: read/write', () => {
   const storage = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
     name: 'settings',
   });
 
@@ -22,7 +22,7 @@ it('Sync: read/write', () => {
 
 it('Sync: different names', () => {
   const storage = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
     name: 'settings',
   });
 
@@ -31,7 +31,7 @@ it('Sync: different names', () => {
   expect(storage.value).toEqual(10);
 
   const storage2 = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
     name: 'settings2',
   });
 
@@ -51,7 +51,7 @@ it('Sync: different names', () => {
 
 it(`Sync: case-sensitive`, () => {
   const storage = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
   });
 
   storage.value = 20;
@@ -65,7 +65,7 @@ it(`Sync: case-sensitive`, () => {
 
 it(`Sync: ref problem (need structuredClone)`, () => {
   const storage = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
   });
 
   // set value
@@ -81,7 +81,7 @@ it(`Sync: ref problem (need structuredClone)`, () => {
 
   // Test new session
   const newStorage = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
   });
 
   // get value
@@ -92,9 +92,28 @@ it(`Sync: ref problem (need structuredClone)`, () => {
   }
 });
 
+it('Sync: delete storage', () => {
+  const storage = createStorage({
+    use: new TestedInterface(),
+    name: 'settings',
+  });
+
+  storage.value = 42;
+
+  storage.deleteStorage();
+
+  expect.assertions(1);
+  try {
+    // eslint-disable-next-line no-console
+    console.log(storage.value);
+  } catch (e) {
+    expect((e as Error).message).toMatch('This Storage was deleted!');
+  }
+});
+
 it('Sync: addDefault', () => {
   const storage = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
   });
 
   storage.addDefault({ value: 9 });
@@ -114,7 +133,7 @@ it('Sync: addDefault', () => {
 
 it('Sync: getDefault', () => {
   const storage = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
   });
 
   storage.addDefault({ value: 2, other: 7 });
@@ -124,7 +143,7 @@ it('Sync: getDefault', () => {
 
 it('Sync: setDefault', () => {
   const storage = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
   });
 
   storage.addDefault({ value: 2, other: 7 });
@@ -138,7 +157,7 @@ it('Sync: setDefault', () => {
 
 it('Sync: clearDefault', () => {
   const storage = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
   });
 
   storage.addDefault({ value: 2, other: 7 });
@@ -151,7 +170,7 @@ it('Sync: clearDefault', () => {
 
 it('Sync: delete key', () => {
   const storage = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
   });
 
   storage.addDefault({ value: 2 });
@@ -171,7 +190,7 @@ it('Sync: delete key', () => {
 
 it('Sync: clear storage', () => {
   const storage = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
   });
 
   storage.addDefault({ value: 2 });
@@ -189,7 +208,7 @@ it('Sync: clear storage', () => {
 
 it('Sync: size', () => {
   const storage = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
   });
 
   storage.addDefault({ value: 2 });
@@ -202,7 +221,7 @@ it('Sync: size', () => {
 
 it('Sync: key', () => {
   const storage = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
   });
 
   storage.addDefault({ value: 2 });
@@ -214,7 +233,7 @@ it('Sync: key', () => {
 
 it('Sync: iter', () => {
   const storage = createStorage({
-    use: new MapInterface(),
+    use: new TestedInterface(),
   });
 
   storage.addDefault({ value: 2 });
