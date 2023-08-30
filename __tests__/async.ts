@@ -15,8 +15,6 @@ it('Async: read/write', async () => {
     asyncMode: true,
   });
 
-  await storage.open();
-
   storage.value = { c: [40, 42] };
   await storage.value;
 
@@ -31,8 +29,6 @@ it('Async: different names', async () => {
     name: 'settings',
     asyncMode: true,
   });
-
-  await storage.open();
 
   storage.value = 10;
   await storage.value;
@@ -116,8 +112,6 @@ it('Async: delete storage', async () => {
     name: 'settings',
   });
 
-  await storage.open();
-
   storage.value = 42;
   await storage.value;
 
@@ -136,8 +130,6 @@ it('Async: addDefault', async () => {
     use: new TestedInterface(),
     asyncMode: true,
   });
-
-  await storage.open();
 
   storage.addDefault({ value: 9 });
   storage.addDefault({ value: 1, value2: 2 });
@@ -163,8 +155,6 @@ it('Async: getDefault', async () => {
     asyncMode: true,
   });
 
-  await storage.open();
-
   storage.addDefault({ value: 2, other: 7 });
 
   expect(storage.getDefault()).toEqual({ value: 2, other: 7 });
@@ -175,8 +165,6 @@ it('Async: setDefault', async () => {
     use: new TestedInterface(),
     asyncMode: true,
   });
-
-  await storage.open();
 
   storage.addDefault({ value: 2, other: 7 });
 
@@ -193,8 +181,6 @@ it('Async: clearDefault', async () => {
     asyncMode: true,
   });
 
-  await storage.open();
-
   storage.addDefault({ value: 2, other: 7 });
 
   storage.clearDefault();
@@ -208,8 +194,6 @@ it('Async: delete key', async () => {
     use: new TestedInterface(),
     asyncMode: true,
   });
-
-  await storage.open();
 
   storage.addDefault({ value: 2 });
 
@@ -241,8 +225,6 @@ it('Async: clear storage', async () => {
     asyncMode: true,
   });
 
-  await storage.open();
-
   storage.addDefault({ value: 2 });
   storage.value = 4;
   await storage.value;
@@ -262,8 +244,6 @@ it('Async: size', async () => {
     asyncMode: true,
   });
 
-  await storage.open();
-
   storage.addDefault({ value: 2 });
   storage.value = 4;
   await storage.value;
@@ -280,8 +260,6 @@ it('Async: key', async () => {
     asyncMode: true,
   });
 
-  await storage.open();
-
   storage.addDefault({ value: 2 });
   storage.value = 4;
   await storage.value;
@@ -295,8 +273,6 @@ it('Async: iter', async () => {
     use: new TestedInterface(),
     asyncMode: true,
   });
-
-  await storage.open();
 
   storage.addDefault({ value: 2 });
 

@@ -6,19 +6,18 @@ which always returns `Promise.resolve(...)` because `Map` is synchronous).
 Supports iteration and default values. Written in TypeScript.
 Uses the [storage-facade](https://www.npmjs.com/package/storage-facade)
 library which is provides a single storage API that abstracts over
-the actual storage implementation. 
+the actual storage implementation.
 
 ## Installation
 
 ```sh
-npm install storage-facade@3 storage-facade-map
+npm install storage-facade@4 storage-facade-map@3
 ```
 
 # Usage
 
 ## Storage methods
 
-- `.open()` - async only, returns a promise containing an initialization error or `undefined`
 - `.clear()` - removes all key-value pairs from the storage
 - `.getEntries()` async only, returns an array of promises to iterate
 - `.entries()` sync only, returns an array of key-value pairs
@@ -53,16 +52,19 @@ import { MapInterface } from 'storage-facade-map';
     asyncMode: true, // default: false
   });
 
-  // Make sure the storage was initialized without error
-  await storage.open();
+  // If an error occurs at the initialization stage,
+  // it will be thrown at the first attempt
+  // to access the storage (read, write, all methods except
+  // 'addDefault, setDefault, getDefault, clearDefault')
 
+  // Write
   storage.value = { data: [40, 42] };
   // After the assignment, wait for the write operation to complete
   await storage.value; // Successfully written
-  
+
   // Read value
   console.log(await storage.value); // { data: [40, 42] }
-  
+
   // When writing, accesses to first-level keys are intercepted only,
   // so if you need to make changes inside the object,
   // you need to make changes and then assign it to the first level key.
@@ -78,35 +80,33 @@ import { MapInterface } from 'storage-facade-map';
   console.log(
     ((await storage.value) as Record<string, unknown>).data
   ); // [10, 45]
-  
+
   // OR
   const value = (await storage.value) as Record<string, unknown>;
   console.log(value.data); // [10, 45]
-  
+
   // Delete value
   delete storage.value;
   await storage.value; // Successfully deleted
-  
+
   console.log(await storage.value); // undefined
-  
+
   storage.value = 30;
   await storage.value;
-  
+
   console.log(await storage.value); // 30
-  
+
   // Clear storage
   await storage.clear();
   console.log(await storage.value); // undefined
-  
+
   // Delete storage
   await storage.deleteStorage();
-  // An error will be thrown when trying to access
-  // console.log(await storage.value); // Err: 'This Storage was deleted!'
 })();
 ```
 
 ### Sync read/write/delete
-  
+
 ```TypeScript
 import { createStorage } from 'storage-facade';
 import { MapInterface } from 'storage-facade-map';
@@ -115,12 +115,16 @@ const storage = createStorage({
   use: new MapInterface(),
 });
 
-// If an initialization error occurs,
-// it will be thrown on the first attempt to read/write
+// If an error occurs at the initialization stage,
+// it will be thrown at the first attempt
+// to access the storage (read, write, all methods except
+// 'addDefault, setDefault, getDefault, clearDefault')
 try {
+  // Write
   storage.value = { data: [40, 42] };
+  // Read
   console.log(storage.value); // { data: [40, 42] }
-  
+
   // When writing, accesses to first-level keys are intercepted only,
   // so if you need to make changes inside the object,
   // you need to make changes and then assign it to the first level key.
@@ -131,20 +135,20 @@ try {
   // Update storage
   storage.value = updatedValue; // Ok
   console.log((storage.value as Record<string, unknown>).data); // [10, 45]
-  
+
   delete storage.value;
   console.log(storage.value); // undefined
-  
+
   storage.value = 30;
   console.log(storage.value); // 30
-  
+
   storage.clear();
   console.log(storage.value); // undefined
-  
+
   // Delete storage
   storage.deleteStorage();
   // An error will be thrown when trying to access
-  // console.log(storage.value); // Error: 'This Storage was deleted!'
+  // console.log(storage.value); // Err: 'This Storage was deleted!'
 } catch (e) {
   console.error((e as Error).message);
   // If you are not using TypeScript replace this line with
@@ -163,8 +167,6 @@ import { MapInterface } from 'storage-facade-map';
     use: new MapInterface(),
     asyncMode: true,
   });
-
-  await storage.open();
 
   storage.value = 4;
   await storage.value;
@@ -235,16 +237,14 @@ import { MapInterface } from 'storage-facade-map';
     asyncMode: true,
   });
 
-  await storage.open();
-
   console.log(await storage.value) // undefined
 
   storage.addDefault({ value: 9, other: 3 });
   storage.addDefault({ value: 1, value2: 2 });
-  
+
   // Since `storage.value = undefined` the default value is used
   console.log(await storage.value);  // 1
-  
+
   console.log(await storage.value2); // 2
   console.log(await storage.other);  // 3
 
@@ -261,23 +261,23 @@ import { MapInterface } from 'storage-facade-map';
   storage.value = null;
   await storage.value;
   console.log(await storage.value); // null
-  
+
   delete storage.value;
   await storage.value;
   console.log(await storage.value); // 1
-  
+
   // getDefault
   console.log(storage.getDefault()); // { value: 1, value2: 2, other: 3 }
-  
+
   // Replace 'default'
   storage.setDefault({ value: 30 });
 
   console.log(await storage.value); // 30
   console.log(await storage.value2); // undefined
-  
+
   // clearDefault
   storage.clearDefault();
-  
+
   console.log(await storage.value); // undefined
   console.log(await storage.value2); // undefined
 })();
@@ -298,10 +298,10 @@ try {
 
   storage.addDefault({ value: 9, other: 3 });
   storage.addDefault({ value: 1, value2: 2 });
-  
+
   // Since `storage.value = undefined` the default value is used
   console.log(storage.value);  // 1
-  
+
   console.log(storage.value2); // 2
   console.log(storage.other);  // 3
 
@@ -315,22 +315,22 @@ try {
 
   storage.value = null;
   console.log(storage.value); // null
-  
+
   delete storage.value;
   console.log(storage.value); // 1
-  
+
   // getDefault
   console.log(storage.getDefault()); // { value: 1, value2: 2, other: 3 }
-  
+
   // Replace 'default'
   storage.setDefault({ value: 30 });
 
   console.log(storage.value); // 30
   console.log(storage.value2); // undefined
-  
+
   // clearDefault
   storage.clearDefault();
-  
+
   console.log(storage.value); // undefined
   console.log(storage.value2); // undefined
 } catch (e) {
@@ -389,14 +389,14 @@ async:
   // Make changes
   updatedValue.data = 42;
   // Update storage
-  storage.value = updatedValue; 
+  storage.value = updatedValue;
   await storage.value // Ок
 ```
 
 ## Don't use banned key names
 
 There is a list of key names that cannot be used because they are the same
-as built-in method names: [`open`, `clear`, `deleteStorage`, `size`, `key`,
+as built-in method names: [`clear`, `deleteStorage`, `size`, `key`,
 `getEntries`, `entries`, `addDefault`, `setDefault`, `getDefault`, `clearDefault`].
 
 Use the `keyIsNotBanned` function to check the key if needed.
@@ -425,14 +425,4 @@ Only values of type `string` can be used as keys.
 
 ## Values should be of any structured-cloneable type
 
-Values should be of any [structured-cloneable type (MDN)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm#supported_types). 
-
-
-
-
-
-
-
-
-
-
+Values should be of any [structured-cloneable type (MDN)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm#supported_types).

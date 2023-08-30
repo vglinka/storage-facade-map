@@ -74,12 +74,13 @@ export class MapInterface extends StorageInterface {
     return Promise.resolve(this.storage.size);
   }
 
-  async keyAsync(index: number): Promise<Error | string> {
+  async keyAsync(index: number): Promise<Error | string | undefined> {
     this.checkStorage();
-    return Promise.resolve(Array.from(this.storage)[index][0]);
+    return Promise.resolve(Array.from(this.storage)[index]?.[0]);
   }
 
   async deleteStorageAsync(): Promise<Error | Ok> {
+    this.checkStorage();
     this.storage.clear();
     this.isDeleted = true;
     return new Ok();
@@ -116,12 +117,13 @@ export class MapInterface extends StorageInterface {
     return this.storage.size;
   }
 
-  keySync(index: number): string {
+  keySync(index: number): string | undefined {
     this.checkStorage();
-    return Array.from(this.storage)[index][0];
+    return Array.from(this.storage)[index]?.[0];
   }
 
   deleteStorageSync(): void {
+    this.checkStorage();
     this.storage.clear();
     this.isDeleted = true;
   }
@@ -133,4 +135,11 @@ export const getMapStorage = (storage: StorageFacade): Map<string, unknown> => {
     Object.getPrototypeOf(storage)
   ) as Base<MapInterface>;
   return base.storageInterface.storage;
+};
+
+export const getBase = (storage: StorageFacade): Base<MapInterface> => {
+  const base = Object.getPrototypeOf(
+    Object.getPrototypeOf(storage)
+  ) as Base<MapInterface>;
+  return base;
 };
