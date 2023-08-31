@@ -52,11 +52,6 @@ import { MapInterface } from 'storage-facade-map';
     asyncMode: true, // default: false
   });
 
-  // If an error occurs at the initialization stage,
-  // it will be thrown at the first attempt
-  // to access the storage (read, write, all methods except
-  // 'addDefault, setDefault, getDefault, clearDefault')
-
   // Write
   storage.value = { data: [40, 42] };
   // After the assignment, wait for the write operation to complete
@@ -115,10 +110,6 @@ const storage = createStorage({
   use: new MapInterface(),
 });
 
-// If an error occurs at the initialization stage,
-// it will be thrown at the first attempt
-// to access the storage (read, write, all methods except
-// 'addDefault, setDefault, getDefault, clearDefault')
 try {
   // Write
   storage.value = { data: [40, 42] };
